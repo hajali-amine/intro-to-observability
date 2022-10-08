@@ -8,31 +8,31 @@ services:
       - ./prometheus/:/etc/prometheus/
       - ./prometheus_data:/prometheus:rw
     command:
-      - '--config.file=/etc/prometheus/prometheus.yaml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - --config.file=/etc/prometheus/prometheus.yaml
+      - --storage.tsdb.path=/prometheus
+      - --web.console.libraries=/usr/share/prometheus/console_libraries
+      - --web.console.templates=/usr/share/prometheus/consoles
     ports:
       - 9090:9090
     restart: always
 
   api:
-    build: .
+    build: ./app
     ports:
       - 5000:5000
     restart: always
 
   grafana:
-      image: grafana/grafana
-      ports:
-        - 3000:3000
-      environment:
-        - GF_SERVER_SERVE_FROM_SUB_PATH=true
-      restart: always
-      volumes:
-        - ./grafana/provisioning:/etc/grafana/provisioning
-        - ./grafana/dashboards:/etc/grafana/dashboards
-        
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    environment:
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+    restart: always
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/etc/grafana/dashboards
+
   node-exporter:
     image: prom/node-exporter
     container_name: node-exporter
@@ -42,9 +42,9 @@ services:
       - /sys:/host/sys:ro
       - /:/rootfs:ro
     command:
-      - '--path.procfs=/host/proc'
-      - '--path.rootfs=/rootfs'
-      - '--path.sysfs=/host/sys'
-      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+      - --path.procfs=/host/proc
+      - --path.rootfs=/rootfs
+      - --path.sysfs=/host/sys
+      - --collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)
     ports:
       - 9100:9100
