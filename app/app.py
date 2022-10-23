@@ -1,23 +1,19 @@
-from flask import Flask, jsonify
-from prometheus_client import make_wsgi_app
+from flask import Flask, jsonify, request
+from prometheus_flask_exporter import PrometheusMetrics
 from services.service import factorial as f
-from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 from observability.counter import REQUEST_COUNTER
 
 app = Flask(__name__)
+metrics = PrometheusMetrics(app=app, path="/metrics")
 
 
-@app.route("/<int(signed=True):n>")
-def factorial(n):
+@app.route("/fact")
+def factorial():
     try:
-        fac = jsonify(f(n))
+        fac = f(n=int(request.args.get("n")))
         REQUEST_COUNTER.labels(status=200).inc()
-        return fac
+        return jsonify({"result": fac})
     except:
         REQUEST_COUNTER.labels(status=500).inc()
-
-
-app.wsgi_app = DispatcherMiddleware(
-    app.wsgi_app, {"/metrics": make_wsgi_app()}
-)
+        return jsonify({"result": "error"})

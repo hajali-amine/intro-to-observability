@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: factorial-service
+  labels:
+    app: fact-service
+spec:
+  replicas: {{ .Values.deployment.replicas }}
+  selector:
+    matchLabels:
+      app: fact-service
+  template:
+    metadata:
+      annotations:
+        prometheus.io/port: "5000"
+        prometheus.io/path: "/metrics"
+        prometheus.io/scrape: "true"
+      labels:
+        app: fact-service
+    spec:
+      containers:
+      - name: fact-service
+        image: aminehajali/factorial
+        ports:
+        - containerPort: 5000
